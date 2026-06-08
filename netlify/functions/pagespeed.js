@@ -18,8 +18,18 @@ exports.handler = async (event) => {
   const psUrl = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(url)}&strategy=mobile&category=performance&category=accessibility&category=best-practices&category=seo&key=${PS_KEY}`;
 
   try {
-    const resp = await fetch(psUrl);
-    const data = await resp.json();
+    const https = require("https");
+
+    const data = await new Promise((resolve, reject) => {
+      https.get(psUrl, (res) => {
+        let raw = "";
+        res.on("data", chunk => raw += chunk);
+        res.on("end", () => {
+          try { resolve(JSON.parse(raw)); }
+          catch(e) { reject(e); }
+        });
+      }).on("error", reject);
+    });
 
     if (data.error) {
       return {
@@ -29,7 +39,7 @@ exports.handler = async (event) => {
       };
     }
 
-    const cats  = data.lighthouseResult?.categories ?? {};
+    const cats   = data.lighthouseResult?.categories ?? {};
     const audits = data.lighthouseResult?.audits ?? {};
 
     function score(key) {
@@ -37,14 +47,14 @@ exports.handler = async (event) => {
     }
 
     const result = {
-      performance:      score("performance"),
-      seo:              score("seo"),
-      accessibility:    score("accessibility"),
-      bestPractices:    score("best-practices"),
-      fcp:  audits["first-contentful-paint"]?.displayValue ?? "—",
-      lcp:  audits["largest-contentful-paint"]?.displayValue ?? "—",
-      cls:  audits["cumulative-layout-shift"]?.displayValue ?? "—",
-      tbt:  audits["total-blocking-time"]?.displayValue ?? "—",
+      performance:   score("performance"),
+      seo:           score("seo"),
+      accessibility: score("accessibility"),
+      bestPractices: score("best-practices"),
+      fcp:        audits["first-contentful-paint"]?.displayValue ?? "—",
+      lcp:        audits["largest-contentful-paint"]?.displayValue ?? "—",
+      cls:        audits["cumulative-layout-shift"]?.displayValue ?? "—",
+      tbt:        audits["total-blocking-time"]?.displayValue ?? "—",
       speedIndex: audits["speed-index"]?.displayValue ?? "—",
     };
 
