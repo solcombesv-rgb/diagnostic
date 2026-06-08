@@ -28,7 +28,12 @@ exports.handler = async (event) => {
     const payload = JSON.stringify({
       email,
       listIds: [5],
-      attributes: { SOURCE: "diagnostic_virgule", SITE_ANALYSE: url, SCORE: score },
+      attributes: {
+        SOURCE: "diagnostic_business",
+        SITE_ANALYSE: url,
+        BUSINESS_SCORE: score,
+        ANALYSE_DATE: new Date().toISOString(),
+      },
       updateEnabled: true,
     });
 
