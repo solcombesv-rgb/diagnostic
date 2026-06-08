@@ -15,7 +15,7 @@ exports.handler = async (event) => {
   }
 
   const PS_KEY = process.env.PAGESPEED_KEY;
-  const psUrl = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(url)}&strategy=mobile&category=performance&category=accessibility&category=best-practices&category=seo`;
+  const psUrl = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(url)}&strategy=mobile&key=${AIzaSyBdvbIu7iEg39CezY1M-xGta2bGIrpGjHw}&category=performance&category=accessibility&category=best-practices&category=seo`;
 
   try {
     const https = require("https");
