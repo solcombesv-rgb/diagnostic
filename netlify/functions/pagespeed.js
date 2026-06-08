@@ -14,7 +14,7 @@ exports.handler = async (event) => {
     return { statusCode: 400, headers, body: JSON.stringify({ error: "URL manquante" }) };
   }
 
-  const PS_KEY = process.env.PAGESPEED_KEY;const psUrl = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(url)}&strategy=mobile&key=${PS_KEY}&category=performance&category=accessibility&category=best-practices&category=seo`;
+  const PS_KEY = process.env.PAGESPEED_KEY;const psUrl = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(url)}&strategy=mobile&key=${PAGESPEED_KEY}&category=performance&category=accessibility&category=best-practices&category=seo`;
 
   try {
     const https = require("https");
