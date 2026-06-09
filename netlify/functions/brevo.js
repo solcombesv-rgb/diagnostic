@@ -23,43 +23,18 @@ exports.handler = async (event) => {
   const BREVO_KEY = process.env.BREVO_KEY;
 
   try {
-    const https = require("https");
-
-    const payload = JSON.stringify({
-      email,
-      listIds: [5],
-      attributes: {
-        SOURCE: "diagnostic_business",
-        SITE_ANALYSE: url,
-        BUSINESS_SCORE: score,
-        ANALYSE_DATE: new Date().toISOString(),
-      },
-      updateEnabled: true,
+    const resp = await fetch("https://api.brevo.com/v3/contacts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "api-key": BREVO_KEY },
+      body: JSON.stringify({
+        email,
+        listIds: [5],
+        attributes: { SOURCE: "diagnostic_virgule", SITE_ANALYSE: url, SCORE: score },
+        updateEnabled: true,
+      }),
     });
 
-    const data = await new Promise((resolve, reject) => {
-      const req = https.request({
-        hostname: "api.brevo.com",
-        path: "/v3/contacts",
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "api-key": BREVO_KEY,
-          "Content-Length": Buffer.byteLength(payload),
-        },
-      }, (res) => {
-        let raw = "";
-        res.on("data", chunk => raw += chunk);
-        res.on("end", () => {
-          try { resolve(JSON.parse(raw)); }
-          catch(e) { resolve({ raw }); }
-        });
-      });
-      req.on("error", reject);
-      req.write(payload);
-      req.end();
-    });
-
+    const data = await resp.json();
     return { statusCode: 200, headers, body: JSON.stringify({ ok: true, data }) };
 
   } catch (e) {
